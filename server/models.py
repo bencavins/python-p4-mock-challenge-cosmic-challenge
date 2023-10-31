@@ -20,39 +20,59 @@ db = SQLAlchemy(metadata=metadata)
 class Planet(db.Model, SerializerMixin):
     __tablename__ = 'planets'
 
+    # Add serialization rules
+    serialize_rules = ('-missions.planet',)
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     distance_from_earth = db.Column(db.Integer)
     nearest_star = db.Column(db.String)
 
     # Add relationship
-
-    # Add serialization rules
+    missions = db.relationship('Mission', back_populates='planet')
 
 
 class Scientist(db.Model, SerializerMixin):
     __tablename__ = 'scientists'
+    
+    # Add serialization rules
+    serialize_rules = ('-missions.scientist',)
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
-    field_of_study = db.Column(db.String)
+    name = db.Column(db.String, nullable=False)
+    field_of_study = db.Column(db.String, nullable=False)
 
     # Add relationship
-
-    # Add serialization rules
+    missions = db.relationship(
+        'Mission', 
+        back_populates='scientist',
+        cascade='all, delete-orphan'
+    )
 
     # Add validation
+    @validates('name', 'field_of_study')
+    def validate_stuff(self, key, new_value):
+        if len(new_value) == 0:
+            raise ValueError(f'{key} not long enough')
+        else:
+            return new_value
 
 
 class Mission(db.Model, SerializerMixin):
     __tablename__ = 'missions'
 
+    # Add serialization rules
+    serialize_rules = ('-scientist.missions', '-planet.missions')
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
+    scientist_id = db.Column(db.Integer, db.ForeignKey('scientists.id'))
+    planet_id = db.Column(db.Integer, db.ForeignKey('planets.id'))
 
     # Add relationships
+    scientist = db.relationship('Scientist', back_populates='missions')
+    planet = db.relationship('Planet', back_populates='missions')
 
-    # Add serialization rules
 
     # Add validation
 
