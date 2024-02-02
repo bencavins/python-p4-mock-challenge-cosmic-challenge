@@ -7,17 +7,11 @@ In this repo:
 
 - There is a Flask application with some features built out.
 - There is a fully built React frontend application.
-- There are tests included which you can run using `pytest -x`.
 - There is a file `mock-challenge-cosmic-challenge.postman_collection.json` that
   contains a Postman collection of requests for testing each route you will
   implement.
 
-Depending on your preference, you can either check your API by:
-
-- Using Postman to make requests
-- Running `pytest -x` and seeing if your code passes the tests
-- Running the React application in the browser and interacting with the API via
-  the frontend
+You can test your code by using Postman to make requests.
 
 You can import `mock-challenge-cosmic-challenge.postman_collection.json` into
 Postman by pressing the `Import` button.
@@ -36,7 +30,6 @@ To download the dependencies for the frontend and backend, run:
 ```console
 pipenv install
 pipenv shell
-npm install --prefix client
 ```
 
 You can run your Flask API on [`localhost:5555`](http://localhost:5555) by
@@ -50,7 +43,9 @@ You can run your React app on [`localhost:4000`](http://localhost:4000) by
 running:
 
 ```sh
-npm start --prefix client
+cd client
+npm install
+npm start
 ```
 
 You are not being assessed on React, and you don't have to update any of the
@@ -89,9 +84,7 @@ Now you can implement the relationships as shown in the ER Diagram:
 - An `Planet` has (is visited by) many `Scientist`s through `Mission`s
 - A `Mission` belongs to a `Scientist` and belongs to a `Planet`
 
-Update `server/models.py` to establish the model relationships. Since a
-`Mission` belongs to a `Scientist` and a `Planet`, configure the model to
-cascade deletes.
+Update `server/models.py` to establish the model relationships. 
 
 Set serialization rules to limit the recursion depth.
 
@@ -109,16 +102,6 @@ python seed.py
 ---
 
 ---
-
-## Validations
-
-Add validations to the `Scientist` model:
-
-- must have a `name`, and a `field_of_study`
-
-Add validations to the `Mission` model:
-
-- must have a `name`, a `scientist_id` and a `planet_id`
 
 ## Routes
 
@@ -153,41 +136,41 @@ scientist.
 ]
 ```
 
-### GET /scientists/<int:id>
+### GET /scientists/\<int:id\>
 
 If the `Scientist` exists, return JSON data in the format below. Make sure to
 include a list of missions for the scientist.
 
 ```json
 "field_of_study": "Orbits",
-    "id": 1,
-    "name": "Joseph Richard",
-    "missions": [
-        {
-            "id": 1,
-            "name": "Explore Planet X.",
-            "planet": {
-                "distance_from_earth": 302613474,
-                "id": 8,
-                "name": "X",
-                "nearest_star": "Shiny Star"
-            },
-            "planet_id": 8,
-            "scientist_id": 1
+"id": 1,
+"name": "Joseph Richard",
+"missions": [
+    {
+        "id": 1,
+        "name": "Explore Planet X.",
+        "planet": {
+            "distance_from_earth": 302613474,
+            "id": 8,
+            "name": "X",
+            "nearest_star": "Shiny Star"
         },
-        {
-            "id": 10,
-            "name": "Explore Planet Y.",
-            "planet": {
-                "distance_from_earth": 1735242898,
-                "id": 14,
-                "name": "Y",
-                "nearest_star": "Dim Star"
-            },
-            "planet_id": 14,
-            "scientist_id": 1
-        }
-    ]
+        "planet_id": 8,
+        "scientist_id": 1
+    },
+    {
+        "id": 10,
+        "name": "Explore Planet Y.",
+        "planet": {
+            "distance_from_earth": 1735242898,
+            "id": 14,
+            "name": "Y",
+            "nearest_star": "Dim Star"
+        },
+        "planet_id": 14,
+        "scientist_id": 1
+    }
+]
 }
 ```
 
@@ -223,16 +206,7 @@ If the `Scientist` is created successfully, send back a response with the new
 }
 ```
 
-If the `Scientist` is **not** created successfully due to validation errors,
-return the following JSON data, along with the appropriate HTTP status code:
-
-```json
-{
-  "errors": ["validation errors"]
-}
-```
-
-### PATCH /scientists/:id
+### PATCH /scientists/\<int:id\>
 
 This route should update an existing `Scientist`. It should accept an object
 with one or more of the following properties in the body of the request:
@@ -255,16 +229,7 @@ updated `Scientist` and a 202 `accepted` status code:
 }
 ```
 
-If the `Scientist` is **not** updated successfully, return the following JSON
-data, along with the appropriate HTTP status code:
-
-```json
-{
-  "errors": ["validation errors"]
-}
-```
-
-OR, given an invalid ID, the appropriate HTTP status code, and the following
+Given an invalid ID, return the appropriate HTTP status code, and the following
 JSON:
 
 ```json
@@ -273,12 +238,9 @@ JSON:
 }
 ```
 
-### DELETE /scientists/<int:id>
+### DELETE /scientists/\<int:id\>
 
-If the `Scientist` exists, it should be removed from the database, along with
-any `Mission`s that are associated with it. If you did not set up your models to
-cascade deletes, you need to delete associated `Mission`s before the `Scientist`
-can be deleted.
+If the `Scientist` exists, it should be removed from the database. 
 
 After deleting the `Scientist`, return an _empty_ response body, along with the
 appropriate HTTP status code.
@@ -294,9 +256,7 @@ the appropriate HTTP status code:
 
 ### GET /planets
 
-Return JSON data in the format below. **Note**: you should return a JSON
-response in this format, without any additional nested data related to each
-planet.
+Return JSON data in the format below.
 
 ```json
 [
@@ -350,6 +310,51 @@ mission:
   "scientist_id": 1
 }
 ```
+---
+
+## Stretch Goals
+
+### Configure Cascading Deletes
+
+Since a `Mission` belongs to a `Scientist` and a `Planet`, configure the model to
+cascade deletes.
+
+When a `Scientist` is deleted, also delete any `Mission`s that are associated with it. If you did not set up your models to cascade deletes, you need to delete associated `Mission`s before the `Scientist`
+can be deleted.
+
+### Add Validations to Data Model
+
+Add validations to the `Scientist` model:
+
+- must have a `name`, and a `field_of_study`
+
+Add validations to the `Mission` model:
+
+- must have a `name`, a `scientist_id` and a `planet_id`
+
+### Validation Checking in POST /scientists
+
+If the `Scientist` is **not** created successfully due to validation errors,
+return the following JSON data, along with the appropriate HTTP status code:
+
+```json
+{
+  "error": "appropriate error message"
+}
+```
+
+### Validation Checking in PATCH /scientists/:id
+
+If the `Scientist` is **not** updated successfully, return the following JSON
+data, along with the appropriate HTTP status code:
+
+```json
+{
+  "error": "appropriate error message"
+}
+```
+
+### POST /missions
 
 If the `Mission` is **not** created successfully, return the following JSON
 data, along with the appropriate HTTP status code:
@@ -359,16 +364,8 @@ data, along with the appropriate HTTP status code:
   "errors": ["validation errors"]
 }
 ```
-
 ---
 
-### (Optional FYI) React `useCallback` hook
-
-The `ScientistDetail` component in the React app uses the `useCallback` hook to
-memoize the function that fetches a scientist by id. The scientist detail is
-fetched when the component initially renders, and is fetched again after
-updating the scientist detail. `useCallback` caches the function to avoid
-recreating it .
 
 ### Resources
 
