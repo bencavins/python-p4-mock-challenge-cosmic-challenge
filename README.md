@@ -36,7 +36,10 @@ You can run your Flask API on [`localhost:5555`](http://localhost:5555) by
 running:
 
 ```console
-python server/app.py
+export FLASK_APP=server/app.py
+export FLASK_RUN_PORT=5555
+export FLASK_DEBUG=1
+flask run
 ```
 
 You can run your React app on [`localhost:4000`](http://localhost:4000) by
@@ -72,7 +75,6 @@ The file `server/models.py` defines the model classes **without relationships**.
 Use the following commands to create the initial database `app.db`:
 
 ```console
-cd server
 flask db init
 flask db migrate -m 'initial model'
 flask db upgrade head
