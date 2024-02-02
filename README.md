@@ -99,9 +99,8 @@ python seed.py
 ```
 
 > If you aren't able to get the provided seed file working, you are welcome to
-> generate your own seed data to test the application.
-
----
+> generate your own seed data to test the application, but a crashing seed script
+> is likely an indicator that something is broken in your models.
 
 ---
 
@@ -119,9 +118,7 @@ instantiate the `Api` class in server/app.py.
 
 ### GET /scientists
 
-Return JSON data in the format below. **Note**: you should return a JSON
-response in this format, without any additional nested data related to each
-scientist.
+Return JSON data in the format below.
 
 ```json
 [
@@ -144,35 +141,36 @@ If the `Scientist` exists, return JSON data in the format below. Make sure to
 include a list of missions for the scientist.
 
 ```json
-"field_of_study": "Orbits",
-"id": 1,
-"name": "Joseph Richard",
-"missions": [
-    {
-        "id": 1,
-        "name": "Explore Planet X.",
-        "planet": {
-            "distance_from_earth": 302613474,
-            "id": 8,
-            "name": "X",
-            "nearest_star": "Shiny Star"
-        },
-        "planet_id": 8,
-        "scientist_id": 1
-    },
-    {
-        "id": 10,
-        "name": "Explore Planet Y.",
-        "planet": {
-            "distance_from_earth": 1735242898,
-            "id": 14,
-            "name": "Y",
-            "nearest_star": "Dim Star"
-        },
-        "planet_id": 14,
-        "scientist_id": 1
-    }
-]
+{
+  "field_of_study": "Orbits",
+  "id": 1,
+  "name": "Joseph Richard",
+  "missions": [
+      {
+          "id": 1,
+          "name": "Explore Planet X.",
+          "planet": {
+              "distance_from_earth": 302613474,
+              "id": 8,
+              "name": "X",
+              "nearest_star": "Shiny Star"
+          },
+          "planet_id": 8,
+          "scientist_id": 1
+      },
+      {
+          "id": 10,
+          "name": "Explore Planet Y.",
+          "planet": {
+              "distance_from_earth": 1735242898,
+              "id": 14,
+              "name": "Y",
+              "nearest_star": "Dim Star"
+          },
+          "planet_id": 14,
+          "scientist_id": 1
+      }
+  ]
 }
 ```
 
@@ -345,7 +343,7 @@ return the following JSON data, along with the appropriate HTTP status code:
 }
 ```
 
-### Validation Checking in PATCH /scientists/:id
+### Validation Checking in PATCH /scientists/\<int:id\>
 
 If the `Scientist` is **not** updated successfully, return the following JSON
 data, along with the appropriate HTTP status code:
@@ -356,7 +354,7 @@ data, along with the appropriate HTTP status code:
 }
 ```
 
-### POST /missions
+### Validation Checking in POST /missions
 
 If the `Mission` is **not** created successfully, return the following JSON
 data, along with the appropriate HTTP status code:
