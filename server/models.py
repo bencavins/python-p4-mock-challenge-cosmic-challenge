@@ -20,10 +20,8 @@ db = SQLAlchemy(metadata=metadata)
 class Planet(db.Model, SerializerMixin):
     __tablename__ = 'planets'
 
+    # Add database columns
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
-    distance_from_earth = db.Column(db.Integer)
-    nearest_star = db.Column(db.String)
 
     # Add relationship
 
@@ -33,28 +31,20 @@ class Planet(db.Model, SerializerMixin):
 class Scientist(db.Model, SerializerMixin):
     __tablename__ = 'scientists'
 
+    # Add database columns
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
-    field_of_study = db.Column(db.String)
 
     # Add relationship
 
     # Add serialization rules
 
-    # Add validation
-
 
 class Mission(db.Model, SerializerMixin):
     __tablename__ = 'missions'
 
+    # Add database columns
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
 
     # Add relationships
 
     # Add serialization rules
-
-    # Add validation
-
-
-# add any models you may need.
