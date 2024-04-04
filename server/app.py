@@ -25,6 +25,24 @@ db.init_app(app)
 def home():
     return ''
 
+@app.route('/scientists')
+def all_scientists():
+    scis = Scientist.query.all()
+    dicts = []
+    for sci in scis:
+        dicts.append(sci.to_dict(rules=['-missions']))
+    return dicts, 200
+    # return [s.to_dict(rules=['-missions']) for s in Scientist.query.all()], 200
+
+@app.route('/scientists/<int:id>')
+def scientist_by_id(id):
+    sci = Scientist.query.filter(Scientist.id == id).first()
+
+    if sci is None:
+        return {"error": "Scientist not found"}, 404
+    
+    return sci.to_dict(), 200
+
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
