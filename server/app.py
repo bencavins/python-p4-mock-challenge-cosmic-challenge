@@ -25,23 +25,48 @@ db.init_app(app)
 def home():
     return ''
 
-@app.route('/scientists')
+@app.route('/scientists', methods=['GET', 'POST'])
 def all_scientists():
-    scis = Scientist.query.all()
-    dicts = []
-    for sci in scis:
-        dicts.append(sci.to_dict(rules=['-missions']))
-    return dicts, 200
-    # return [s.to_dict(rules=['-missions']) for s in Scientist.query.all()], 200
+    if request.method == 'GET':
+        scis = Scientist.query.all()
+        dicts = []
+        for sci in scis:
+            dicts.append(sci.to_dict(rules=['-missions']))
+        return dicts, 200
+        # return [s.to_dict(rules=['-missions']) for s in Scientist.query.all()], 200
+    elif request.method == 'POST':
+        json_data = request.get_json()
+        new_sci = Scientist(
+            name=json_data.get('name'),
+            field_of_study=json_data.get('field_of_study')
+        )
+        db.session.add(new_sci)
+        db.session.commit()
+        return new_sci.to_dict(rules=['-missions']), 201
 
-@app.route('/scientists/<int:id>')
+@app.route('/scientists/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 def scientist_by_id(id):
     sci = Scientist.query.filter(Scientist.id == id).first()
 
     if sci is None:
         return {"error": "Scientist not found"}, 404
     
-    return sci.to_dict(), 200
+    if request.method == 'GET':
+        return sci.to_dict(), 200
+    elif request.method == 'PATCH':
+        json_data = request.get_json()
+
+        for key, value in json_data.items():
+            setattr(sci, key, value)  # sci.key = value
+        
+        db.session.add(sci)
+        db.session.commit()
+
+        return sci.to_dict(rules=['-missions']), 202
+    elif request.method == 'DELETE':
+        db.session.delete(sci)
+        db.session.commit()
+        return {}, 204
 
 
 if __name__ == '__main__':
