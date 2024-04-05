@@ -69,5 +69,43 @@ def scientist_by_id(id):
         return {}, 204
 
 
+@app.get('/scientists/<int:id>')
+def get_scientist_by_id(id):
+    sci = Scientist.query.filter(Scientist.id == id).first()
+
+    if sci is None:
+        return {"error": "Scientist not found"}, 404
+    
+    return sci.to_dict(), 200
+
+@app.patch('/scientists/<int:id>')
+def patch_scientist_by_id(id):
+    sci = Scientist.query.filter(Scientist.id == id).first()
+
+    if sci is None:
+        return {"error": "Scientist not found"}, 404
+
+    json_data = request.get_json()
+
+    for key, value in json_data.items():
+        setattr(sci, key, value)  # sci.key = value
+    
+    db.session.add(sci)
+    db.session.commit()
+
+    return sci.to_dict(rules=['-missions']), 202
+
+@app.delete('/scientists/<int:id>')
+def delete_scientist_by_id(id):
+    sci = Scientist.query.filter(Scientist.id == id).first()
+
+    if sci is None:
+        return {"error": "Scientist not found"}, 404
+    
+    db.session.delete(sci)
+    db.session.commit()
+    return {}, 204
+
+
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
