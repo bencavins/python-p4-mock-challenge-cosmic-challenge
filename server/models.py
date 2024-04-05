@@ -50,6 +50,11 @@ class Scientist(db.Model, SerializerMixin):
     serialize_rules = ['-missions.scientist']
 
     # Add validation
+    @validates('name', 'field_of_study')
+    def validate_not_blank(self, key, new_value):
+        if not new_value:
+            raise ValueError(f'{key} cannot be blank')
+        return new_value
 
 
 class Mission(db.Model, SerializerMixin):
@@ -68,6 +73,11 @@ class Mission(db.Model, SerializerMixin):
     serialize_rules = ['-planet.missions', '-scientist.missions']
 
     # Add validation
+    @validates('name', 'scientist_id', 'planet_id')
+    def validate_exists(self, key, new_value):
+        if not new_value:
+            raise ValueError(f'{key} is required')
+        return new_value
 
 
 # add any models you may need.
