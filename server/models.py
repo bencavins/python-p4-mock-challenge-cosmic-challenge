@@ -43,7 +43,11 @@ class Scientist(db.Model, SerializerMixin):
     field_of_study = db.Column(db.String, nullable=False)
 
     # Add relationship
-    missions = db.relationship('Mission', back_populates='scientist')
+    missions = db.relationship(
+        'Mission', 
+        back_populates='scientist',
+        cascade='all, delete-orphan'
+    )
 
     # Add serialization rules
     serialize_rules = ['-missions.scientist']
